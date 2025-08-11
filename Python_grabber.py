@@ -34,32 +34,37 @@ def scrape_profiles():
             last_timestamp = datetime.min # Pull everything if no timestamp is stored
 
         # Fetch the latest posts for the current profile
-        for post in profile.get_posts():
-            if len(posts_data) >= 3: # Example: limit to 3 post per profile for testing
+        while True:
+            try:
+                for post in profile.get_posts():
+                    if len(posts_data) >= 3: # Example: limit to 3 post per profile for testing
+                        break
+
+                    if post.date >= cutoff_date:
+                        if post.date > last_timestamp:
+                            try:
+                                location = post.location.name if post.location else "Unknown"
+                            except KeyError:
+                                location = "Unknown"
+
+                            # Extract details you want
+                            post_data = {
+                                "username": username,
+                                "date": post.date.isoformat(),
+                                "caption": post.caption,
+                                "location": location
+                            }
+                            posts_data.append(post_data)
+
+                            print(f"Post from {username} on {post.date}: {post.caption}, Location: {location}")
+
+                            # Save the timestamp of the latest post processed
+                            with open(timestamp_file, "w") as file:
+                                file.write(post.date.isoformat())
                 break
-
-
-            if post.date >= cutoff_date:
-                    if post.date > last_timestamp:
-                        try:
-                            location = post.location.name if post.location else "Unknown"
-                        except KeyError:
-                            location = "Unknown"
-
-                    # Extract details you want
-                    post_data = {
-                        "username": username,
-                        "date": post.date.isoformat(),
-                        "caption": post.caption,
-                        "location": location
-                    }
-                    posts_data.append(post_data)
-
-                    print(f"Post from {username} on {post.date}: {post.caption}, Location: {location}")
-
-                    # Save the timestamp of the latest post processed
-                    with open(timestamp_file, "w") as file:
-                        file.write(post.date.isoformat())
+            except instaloader.exceptions.ConnectionException as e:
+                print(f"Connection error while fetching posts for {username}: {e}. Retrying in 300 seconds...")
+                time.sleep(300)
 
         # Write posts data to a JSON file for later use in mapping
         with open('posts_data.json', 'w') as json_file:
