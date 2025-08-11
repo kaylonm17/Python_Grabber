@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 # Initialize Instaloader
 L = instaloader.Instaloader()
 # Load the saved session (replace 'your_username' with your Instagram username)
-L.load_session_from_file('official.meetz')
+L.load_session_from_file('xauzdd')
 
 # profiles go here
 profiles = ["houston_carmeets", "coffeeandcars"]
