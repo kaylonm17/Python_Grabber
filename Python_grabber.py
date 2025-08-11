@@ -38,9 +38,9 @@ def scrape_profiles():
             if len(posts_data) >= 3: # Example: limit to 3 post per profile for testing
                 break
 
-                
+
             if post.date >= cutoff_date:
-                    if post.date > last_timestamp: 
+                    if post.date > last_timestamp:
                         try:
                             location = post.location.name if post.location else "Unknown"
                         except KeyError:
@@ -60,13 +60,13 @@ def scrape_profiles():
                     # Save the timestamp of the latest post processed
                     with open(timestamp_file, "w") as file:
                         file.write(post.date.isoformat())
-        
-            # Sleep between profiles to avoid rate limiting
-            time.sleep(60)
-            
-        # Write posts data to a JSON file for later use in mapping 
+
+        # Write posts data to a JSON file for later use in mapping
         with open('posts_data.json', 'w') as json_file:
             json.dump(posts_data, json_file, indent=4)
+
+        # Sleep between profiles to avoid rate limiting
+        time.sleep(60)
 
 # Run the scraping function right now 
 scrape_profiles()
